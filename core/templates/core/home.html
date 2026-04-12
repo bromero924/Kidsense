@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KidSense</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f7fb;
+            margin: 0;
+            padding: 0;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 40px auto;
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 4px 14px rgba(0, 0, 0, 0.08);
+        }
+
+        h1,
+        h2 {
+            margin-top: 0;
+        }
+
+        .top-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 10px 16px;
+            background-color: #2d6cdf;
+            color: white;
+            text-decoration: none;
+            border-radius: 8px;
+            font-weight: bold;
+        }
+
+        .child-card {
+            border: 1px solid #e3e8ef;
+            border-radius: 10px;
+            padding: 16px;
+            margin-bottom: 16px;
+            background-color: #fafcff;
+        }
+
+        .child-card a {
+            text-decoration: none;
+            color: #1d2a3a;
+            font-size: 18px;
+            font-weight: bold;
+        }
+
+        .child-meta {
+            margin-top: 8px;
+            color: #555;
+        }
+
+        .empty {
+            color: #777;
+            padding: 20px 0;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <div class="top-bar">
+            <div>
+                <h1>KidSense</h1>
+                <p>Track child development through play.</p>
+            </div>
+
+            <div>
+                {% if user.is_authenticated %}
+                <span style="margin-right: 10px;">Hi, {{ user.username }}</span>
+                <a class="btn" href="{% url 'create_child' %}">+ Add Child</a>
+                <form method="post" action="{% url 'logout' %}" style="display:inline;">
+                    {% csrf_token %}
+                    <button type="submit" class="btn" style="margin-left: 8px;">Logout</button>
+                </form>
+                {% else %}
+                <a class="btn" href="{% url 'login' %}">Login</a>
+                <a class="btn" href="{% url 'signup' %}" style="margin-left: 8px;">Sign Up</a>
+                {% endif %}
+            </div>
+        </div>
+
+
+        <h2>Your Children</h2>
+
+        {% if children_data %}
+        {% for item in children_data %}
+        <div class="child-card">
+            <a href="{% url 'child_detail' item.child.id %}">
+                {{ item.child.name }} ({{ item.child.age }} yrs)
+            </a>
+
+            <div class="child-meta">
+                {% if item.score is not None %}
+                Engagement: {{ item.score }} |
+                Level: {{ item.level }}
+                {% if item.trend %}
+                | Progress: {{ item.trend }}
+                {% endif %}
+
+                <div style="
+                margin-top:6px;
+                padding:6px 10px;
+                background:#f5f7fa;
+                border-radius:8px;
+                font-size:13px;
+                color:#333;
+            ">
+                    {{ item.short_recommendation }}
+                </div>
+
+
+
+
+                {{ item.short_recommendation }}
+                {% else %}
+                No data yet
+                {% endif %}
+            </div>
+
+        </div>
+        {% endfor %}
+        {% else %}
+        <p class="empty">No child profiles yet.</p>
+        {% endif %}
+
+    </div>
+</body>
+
+</html>
