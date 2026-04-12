@@ -38,3 +38,24 @@ class Metrics(models.Model):
 
     def __str__(self):
         return f'Metrics fro session {self.session.id}'
+
+
+class Alert(models.Model):
+    child = models.ForeignKey(
+        ChildProfile,
+        on_delete=models.CASCADE,
+        related_name="alerts",
+    )
+    session = models.ForeignKey(
+        GameSession,
+        on_delete=models.CASCADE,
+        related_name="alerts",
+    )
+    message = models.TextField()
+    system_action = models.CharField(max_length=100, blank=True, null=True)
+    score = models.FloatField(blank=True, null=True)
+    sent_sms = models.BooleanField(default=False)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"{self.child.name} - {self.created_at.strftime('%Y-%m-%d %H:%M')}"

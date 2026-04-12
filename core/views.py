@@ -1,7 +1,7 @@
 from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
 from .forms import ChildProfileForm
-from .models import ChildProfile, GameSession, Metrics
+from .models import ChildProfile, GameSession, Metrics, alert
 from django.shortcuts import get_object_or_404
 from django.http import JsonResponse
 import json
@@ -423,7 +423,7 @@ def save_game_result(request, child_id):
 
             )
 
-        Metrics.objects.create(
+        metrics = Metrics.objects.create(
             session=session,
             accuracy=accuracy,
             reaction_time=0,
@@ -432,7 +432,17 @@ def save_game_result(request, child_id):
             final_speed=final_speed,
             system_action=system_action,
             alert_triggered=alert_triggered,
+
         )
+        if alert_triggered:
+            Alert.objects.create(
+                child=child,
+                session=session,
+                message='Child may be struggling. Consider Intervention.',
+                system_action=system_action,
+                score=score,
+                sent_sms=False,
+            )
 
         return JsonResponse({'status': 'success'})
     return JsonResponse({'status': 'invalid request'}, status=400)

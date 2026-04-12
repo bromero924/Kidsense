@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import ChildProfile, GameSession, Metrics
+from .models import ChildProfile, GameSession, Metrics, Alert
 
 
 @admin.register(ChildProfile)
@@ -19,3 +19,6 @@ class GameSessionAdmin(admin.ModelAdmin):
 class MetricsAdmin(admin.ModelAdmin):
     list_display = ('id', 'session', 'accuracy',
                     'reaction_time', 'errors', 'score')
+
+
+admin.site.register(Alert)
