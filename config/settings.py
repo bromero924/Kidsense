@@ -118,6 +118,7 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/6.0/howto/static-files/
 
 STATIC_URL = 'static/'
+STATI_ROOT = os.path.join(BASE_DIR), 'staticfiles'
 LOGIN_URL = '/admin/login'
 LOGIN_REDIRECT_URL = '/'
 LOGOUT_REDIRECT_URL = '/'
@@ -128,4 +129,3 @@ SECRET_KEY = os.environ.get("SECRET_KEY", "dev-only-secret-key")
 TWILIO_ACCOUNT_SID = os.environ.get("TWILIO_ACCOUNT_SID", "")
 TWILIO_AUTH_TOKEN = os.environ.get("TWILIO_AUTH_TOKEN", "")
 TWILIO_PHONE_NUMBER = os.environ.get("TWILIO_PHONE_NUMBER", "")
-STATI_ROOT = os.path.join(BASE_DIR), 'staticfiles'
