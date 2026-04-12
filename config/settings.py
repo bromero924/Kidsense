@@ -128,3 +128,4 @@ SECRET_KEY = os.environ.get("SECRET_KEY", "dev-only-secret-key")
 TWILIO_ACCOUNT_SID = os.environ.get("TWILIO_ACCOUNT_SID", "")
 TWILIO_AUTH_TOKEN = os.environ.get("TWILIO_AUTH_TOKEN", "")
 TWILIO_PHONE_NUMBER = os.environ.get("TWILIO_PHONE_NUMBER", "")
+STATI_ROOT = os.path.join(BASE_DIR), 'staticfiles'
