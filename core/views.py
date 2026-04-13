@@ -357,6 +357,13 @@ def child_detail(request, child_id):
 
 
 def send_sms_alert(to_number, message):
+    print("SID exists:", bool(settings.TWILIO_ACCOUNT_SID))
+    print("TOKEN exists:", bool(settings.TWILIO_AUTH_TOKEN))
+    print("FROM exists:", bool(settings.TWILIO_PHONE_NUMBER))
+
+    if not settings.TWILIO_ACCOUNT_SID or not settings.TWILIO_AUTH_TOKEN or not settings.TWILIO_PHONE_NUMBER:
+        print("Twilio settings missing.")
+        return False
     try:
         client = Client(settings.TWILIO_ACCOUNT_SID,
                         settings.TWILIO_AUTH_TOKEN)
@@ -365,6 +372,7 @@ def send_sms_alert(to_number, message):
             from_=settings.TWILIO_PHONE_NUMBER,
             to=to_number,
         )
+        print('SMS sent:', sms.sid)
         return True
     except Exception as e:
         print("SMS failed:", str(e))
