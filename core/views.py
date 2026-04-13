@@ -356,6 +356,21 @@ def child_detail(request, child_id):
     })
 
 
+def send_sms_alert(to_number, message):
+    try:
+        client = Client(settings.TWILIO_ACCOUNT_SID,
+                        settings.TWILIO_AUTH_TOKEN)
+        client.messages.create(
+            body=message,
+            from_=settings.TWILIO_PHONE_NUMBER,
+            to=to_number,
+        )
+        return True
+    except Exception as e:
+        print("SMS failed:", str(e))
+        return False
+
+
 @login_required
 def save_game_result(request, child_id):
     if request.method == 'POST':
@@ -435,7 +450,7 @@ def save_game_result(request, child_id):
 
         )
         if alert_triggered:
-            Alert.objects.create(
+            alert = Alert.objects.create(
                 child=child,
                 session=session,
                 message='Child may be struggling. Consider Intervention.',
@@ -443,6 +458,13 @@ def save_game_result(request, child_id):
                 score=score,
                 sent_sms=False,
             )
+
+            phone_number = '+19166802487'
+            sms_message = f'KidSense Alert: {child.name} may need support. Score: {score}. Action: {system_action}. Reply STOP to opt out.'
+            sms_sent = send_sms_alert(phone_number, sms_message)
+            if sms_sent:
+                alert.sent_sms = True
+                alert.save()
 
         return JsonResponse({'status': 'success'})
     return JsonResponse({'status': 'invalid request'}, status=400)
@@ -454,28 +476,3 @@ def privacy_view(request):
 
 def terms_view(request):
     return render(request, 'core/terms.html')
-
-
-def send_sms_alert(to_number, message):
-    client = Client(settings.TWILIO_ACCOUNT_SID, settings.TWILIO_AUTH_TOKEN)
-
-    client.messages.create(
-        body=message,
-        from_=settings.TWILIO_PHONE_NUMBER,
-        to=to_number
-    )
-
-
-def send_sms_alert(to_number, message):
-    client = Client(settings.TWILIO_ACCOUNT_SID, settings.TWILIO_AUTH_TOKEN)
-
-    try:
-        message = client.messages.create(
-            body=message,
-            from_=settings.TWILIO_PHONE_NUMBER,
-            to=to_number
-        )
-        print('SMS SENT:', message.sid)
-
-    except Exception as e:
-        print('SMS ERROR:', str(e))
