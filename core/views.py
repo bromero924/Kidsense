@@ -7,6 +7,8 @@ from django.http import JsonResponse
 import json
 from twilio.rest import Client
 from django.conf import settings
+from django.utils import timezone
+from datetime import timedelta
 
 
 def home(request):
@@ -467,13 +469,25 @@ def save_game_result(request, child_id):
                 score=score,
                 sent_sms=False,
             )
+            six_hours_ago = timezone.now() - timedelta(hours=6)
 
-            phone_number = '+19166802487'
-            sms_message = f'KidSense Alert: {child.name} may need support. Score: {score}. Action: {system_action}. Reply STOP to opt out.'
-            sms_sent = send_sms_alert(phone_number, sms_message)
-            if sms_sent:
-                alert.sent_sms = True
-                alert.save()
+            recent_sms_alert = Alert.objects.filter(
+                child=child,
+                sent_sms=True,
+                created_at__gte=six_hours_ago
+            ).exists()
+
+            if not recent_sms_alert:
+                phone_number = '+19166802487'
+                sms_message = f'KidSense Alert: {child.name} may need support. Score: {score}. Action: {system_action}'
+
+                sms_sent = send_sms_alert(phone_number, sms_message)
+
+                if sms_sent:
+                    alert.sent_sms = True
+                    alert.save()
+            else:
+                print("SMS skipped: recent alert already sent for this child.")
 
         return JsonResponse({'status': 'success'})
     return JsonResponse({'status': 'invalid request'}, status=400)
