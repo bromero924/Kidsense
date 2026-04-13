@@ -367,12 +367,13 @@ def send_sms_alert(to_number, message):
     try:
         client = Client(settings.TWILIO_ACCOUNT_SID,
                         settings.TWILIO_AUTH_TOKEN)
-        client.messages.create(
+
+        message_obj = client.messages.create(
             body=message,
             from_=settings.TWILIO_PHONE_NUMBER,
             to=to_number,
         )
-        print('SMS sent:', sms.sid)
+        print('SMS sent:', message_obj.sid)
         return True
     except Exception as e:
         print("SMS failed:", str(e))
